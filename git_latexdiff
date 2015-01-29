@@ -1,0 +1,59 @@
+#!/usr/bin/ruby
+# A script using latex-diff
+# to generate a PDF with 
+# annotations between different commits
+
+NEEDED_COMMANDS = ["pdflatex", "git", "latexdiff"]
+
+#which for ruby, checking whether a command exists 
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable? exe
+    }
+  end
+  return nil
+end
+
+#Check if necessary command are there
+def environmentOK?()
+	commandsMissing = []
+	NEEDED_COMMANDS.each{ |command|
+		if !which(command)
+			commandsMissing.push(command)
+		end
+	}
+	if commandsMissing.size > 0
+	puts "You are missing following programs:\n"
+	commandsMissing.each { |command|
+		puts "\t#{command}\n"
+	}
+	return false
+	end
+	return true
+end
+
+def directory_exists?(directory)
+  File.directory?(directory)
+end
+
+
+puts "Checking Environment"
+
+exit if !environmentOK?
+
+puts "Environment OK"
+
+puts "Checking git folder"
+
+if !directory_exists?(".git")
+	puts "This is not a git folder"
+	exit
+end
+
+puts "git folder OK"
+
+
+
